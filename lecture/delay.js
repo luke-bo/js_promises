@@ -1,59 +1,37 @@
-// 
-function delay(ms, val) {
+// create a delay function
+// Slide 33 from decks write a function 'delay'. It will take a number of ms as an argument. It'll return a promise that resolves after number of seconds'
+// Slide 35 from decks: Add an optional second argument, 'value', to delay. Delay should now resolve the passed value after number of milliseconds
+
+const ONE_SECOND = 1000;
+
+const TWO_SECONDS = 2000;
+function delay(ms, value) {
   return new Promise((res, rej) => {
-    if (val === 'black horse') {
-      rej('No black horses')
+    if (value === 'green') {
+      rej('no greens');
     }
-    // setTimeout is the actual asyncrhonous function here.
-    setTimeout(() => {
-      // this callback gets executed when the asynchronous setTimeout has completed.
-      // when it does complete we call the Promise's `resolve()` function
-      res(val)
-    }, ms)
+    setTimeout(() => { //only used to mimic a async action
+      res(value)
+    }, ms);
   })
 }
 
-const prom = delay(3000).then(val => console.log(val));
-
-// promises are just objects that will have a value in the future. While they're waiting to resolve a value they will be in a "pending" state. Only until the promise has called resolve or reject it will stay in this state.
-console.log(prom)
-setTimeout(() => {
-  console.log(prom)
-}, 3500)
-
-// Chaining Thens
-
-// The problem = callback hell
-setTimeout(() => {
-  setTimeout(() => {
-    setTimeout(() => {
-      setTimeout(() => {
-
-      }, 1000)
-    }, 1000)
-  }, 1000)
-}, 1000)
-
-// then().then().then()
-
-// delay(ms) returns a promise
-delay(2000, 'horse 1').then(data => {
-  console.log(data);
-  // when the promise is done.
-  // return another promise.
-  // because the callback is returning another promise
-  return delay(2000, 'horse 2');
-}).then(data => {
-  console.log(data);
-  // this then is handling the result of the returned promise of the previous then
-  return delay(2000, 'black horse');
-}).then(data => {
-  console.log(data)
-  return delay(2000, 'horse 4');
-}).then((val) => {
-  console.log(val)
-}).catch(err => {
-  console.log(err);
-})
-
-module.exports = delay;
+delay(ONE_SECOND, 'blue') //async action waiting for 1 second
+  .then(val => { // when 1 second is complete we log some stuff 
+    console.log(val); 
+    return delay(TWO_SECONDS, 'red') // and then do another async action by returing another promise will cede the resolution to the next then
+  })
+  .then(val => {
+    console.log(val);
+    return delay(ONE_SECOND, 'green');
+  })
+  .then(val => {
+    console.log(val);
+    return delay(ONE_SECOND, 'grey');
+  })
+  .then(val => {
+    console.log(val);
+  })
+  .catch(err => { // if promise rejects it will skip all the remaining thens and go straight to catch
+    console.log(err);
+  })
